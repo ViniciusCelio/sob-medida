@@ -107,3 +107,6 @@
   line-height: 1.6;
   color: #444;
 }
+.limit-exceeded {
+  color: var(--mat-sys-error, #ba1a1a);
+}

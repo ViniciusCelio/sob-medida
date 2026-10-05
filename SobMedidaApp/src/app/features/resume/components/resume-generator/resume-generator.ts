@@ -9,6 +9,10 @@ import { PdfBuilderService } from '../../../../core/services/pdf-builder.service
 import { ResumeParserService } from '../../../../core/services/resume-parser.service';
 import { GeneratedResume, ResumeContent } from '../../../../core/models/profile.model';
 
+// Mesmos limites do GenerateResumeRequestDTO na API
+const MAX_JOB_TITLE_LENGTH = 200;
+const MAX_JOB_DESCRIPTION_LENGTH = 15000;
+
 @Component({
   selector: 'app-resume-generator',
   standalone: true,
@@ -17,6 +21,9 @@ import { GeneratedResume, ResumeContent } from '../../../../core/models/profile.
   styleUrl: './resume-generator.css'
 })
 export class ResumeGeneratorComponent {
+  readonly maxJobTitleLength = MAX_JOB_TITLE_LENGTH;
+  readonly maxJobDescriptionLength = MAX_JOB_DESCRIPTION_LENGTH;
+
   jobTitle = '';
   jobDescription = '';
   generatedResume: GeneratedResume | null = null;
@@ -31,10 +38,22 @@ export class ResumeGeneratorComponent {
     private cdr : ChangeDetectorRef
   ) {}
 
+  get isDescriptionTooLong(): boolean {
+    return this.jobDescription.length > this.maxJobDescriptionLength;
+  }
+
+  formatCount(value: number): string {
+    return value.toLocaleString('pt-BR');
+  }
+
   onGenerate(): void {
     if (!this.jobTitle.trim() || !this.jobDescription.trim()) {
       this.snackBar.open('Por favor, preencha o título e descrição da vaga.', 'Fechar', { duration: 3000 });
       this.cdr.markForCheck();
+      return;
+    }
+
+    if (this.isDescriptionTooLong) {
       return;
     }
 

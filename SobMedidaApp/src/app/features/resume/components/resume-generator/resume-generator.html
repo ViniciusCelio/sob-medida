@@ -10,19 +10,28 @@
     <mat-card-content>
       <mat-form-field appearance="outline" class="full-width" style="margin-top: 1rem;">
         <mat-label>Título da Vaga</mat-label>
-        <input matInput [(ngModel)]="jobTitle" name="jobTitle" placeholder="ex: Desenvolvedor Full Stack" />
+        <input matInput [(ngModel)]="jobTitle" name="jobTitle" [maxlength]="maxJobTitleLength"
+          placeholder="ex: Desenvolvedor Full Stack" />
         <mat-icon matSuffix>work</mat-icon>
+        <mat-hint align="end">{{ jobTitle.length }} / {{ maxJobTitleLength }}</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Descrição da Vaga</mat-label>
         <textarea matInput [(ngModel)]="jobDescription" name="jobDescription" rows="12"
           placeholder="Cole aqui a descrição completa da vaga..."></textarea>
+        <mat-hint *ngIf="isDescriptionTooLong" class="limit-exceeded">
+          A descrição excede o limite em {{ formatCount(jobDescription.length - maxJobDescriptionLength) }} caracteres.
+          Remova trechos que não descrevem a vaga, como benefícios ou "sobre a empresa".
+        </mat-hint>
+        <mat-hint align="end" [class.limit-exceeded]="isDescriptionTooLong">
+          {{ formatCount(jobDescription.length) }} / {{ formatCount(maxJobDescriptionLength) }}
+        </mat-hint>
       </mat-form-field>
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="onGenerate()" [disabled]="isLoading">
+      <button mat-raised-button color="primary" (click)="onGenerate()" [disabled]="isLoading || isDescriptionTooLong">
         <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
         <mat-icon *ngIf="!isLoading">auto_awesome</mat-icon>
         <span>{{ isLoading ? 'Gerando...' : 'Gerar Currículo' }}</span>
