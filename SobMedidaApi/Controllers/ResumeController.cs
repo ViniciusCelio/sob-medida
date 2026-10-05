@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using SobMedidaApi.Data;
@@ -20,25 +21,29 @@ namespace SobMedidaApi.Controllers
         private readonly ResumeGeneratorService _generator;
         private readonly JobExtractionService _jobExtractor;
         private readonly ResumeValidationService _validator;
+        private readonly ILogger<ResumeController> _logger;
 
         public ResumeController(
             AppDbContext context,
             PromptBuilderService promptBuilder,
             ResumeGeneratorService generator,
             JobExtractionService jobExtractor,
-            ResumeValidationService validator)
+            ResumeValidationService validator,
+            ILogger<ResumeController> logger)
         {
             _context = context;
             _promptBuilder = promptBuilder;
             _generator = generator;
             _jobExtractor = jobExtractor;
             _validator = validator;
+            _logger = logger;
         }
 
         private string GetUserId() =>
             User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         [HttpPost("generate")]
+        [EnableRateLimiting("ai")]
         public async Task<IActionResult> Generate([FromBody] GenerateResumeRequestDTO dto)
         {
             var userId = GetUserId();
@@ -51,10 +56,10 @@ namespace SobMedidaApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Falha ao extrair informações da vaga");
                 return StatusCode(500, new
                 {
-                    message = "Não foi possível processar a descrição da vaga. Verifique se ela contém informações suficientes sobre os requisitos do cargo e tente novamente.",
-                    detail = ex.Message
+                    message = "Não foi possível processar a descrição da vaga. Verifique se ela contém informações suficientes sobre os requisitos do cargo e tente novamente."
                 });
             }
 
@@ -89,7 +94,10 @@ namespace SobMedidaApi.Controllers
                 catch (JsonException ex)
                 {
                     if (attempt == maxAttempts)
-                        return StatusCode(500, new { message = $"Erro ao processar a resposta da IA: {ex.Message}" });
+                    {
+                        _logger.LogError(ex, "Resposta da IA não é um JSON válido");
+                        return StatusCode(500, new { message = "Erro ao processar a resposta da IA. Tente novamente." });
+                    }
 
                     continue;
                 }

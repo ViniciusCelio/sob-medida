@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SobMedidaApi.DTOs;
 using SobMedidaApi.Services;
 
@@ -22,6 +23,7 @@ namespace SobMedidaApi.Controllers
             User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         [HttpPost("preview")]
+        [EnableRateLimiting("ai")]
         public async Task<IActionResult> Preview(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -43,13 +45,6 @@ namespace SobMedidaApi.Controllers
         {
             await _importService.ConfirmImport(data, GetUserId());
             return Ok(new { message = "Profile imported successfully." });
-        }
-        [HttpPost("debug-text")]
-        public async Task<IActionResult> DebugText(IFormFile file)
-        {
-            using var stream = file.OpenReadStream();
-            var text = _importService.ExtractTextPublic(stream);
-            return Ok(new { extractedText = text });
         }
     }
 }

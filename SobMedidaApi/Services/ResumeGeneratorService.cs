@@ -22,7 +22,7 @@ namespace SobMedidaApi.Services
             var model = _configuration["GeminiSettings:Model"]!;
             var apiUrl = _configuration["GeminiSettings:ApiUrl"]!;
 
-            var url = $"{apiUrl}/{model}:generateContent?key={apiKey}";
+            var url = $"{apiUrl}/{model}:generateContent";
 
             var requestBody = new
             {
@@ -44,9 +44,13 @@ namespace SobMedidaApi.Services
             };
 
             var json = JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            using var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+            request.Headers.Add("x-goog-api-key", apiKey);
 
-            var response = await _httpClient.PostAsync(url, content);
+            var response = await _httpClient.SendAsync(request);
             var responseBody = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)

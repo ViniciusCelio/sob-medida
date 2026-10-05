@@ -4,6 +4,7 @@ using SobMedidaApi.DTOs;
 using SobMedidaApi.Models;
 using SobMedidaApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 using SobMedidaApi.Data;
 
@@ -31,6 +32,7 @@ namespace SobMedidaApi.Controllers
         }
 
         [HttpPost("register")]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
             // Check if email is already in use
@@ -70,13 +72,17 @@ namespace SobMedidaApi.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
                 return Unauthorized(new { message = "E-mail ou senha inválidos" });
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: true);
+            if (result.IsLockedOut)
+                return Unauthorized(new { message = "Conta bloqueada temporariamente por excesso de tentativas. Tente novamente em 15 minutos." });
+
             if (!result.Succeeded)
                 return Unauthorized(new { message = "E-mail ou senha inválidos" });
 

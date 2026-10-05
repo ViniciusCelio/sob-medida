@@ -307,11 +307,6 @@ namespace SobMedidaApi.Services
 
             return null;
         }
-        public string ExtractTextPublic(Stream stream)
-        {
-            return _pdfExtractor.ExtractText(stream);
-        }
-
         private string CleanGeminiResponse(string raw)
         {
             if (string.IsNullOrWhiteSpace(raw)) return "{}";

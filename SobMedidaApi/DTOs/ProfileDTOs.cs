@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace SobMedidaApi.DTOs
 {
     public class PersonalInfoDTO
@@ -80,7 +82,10 @@ namespace SobMedidaApi.DTOs
 
     public class GenerateResumeRequestDTO
     {
+        [MaxLength(200, ErrorMessage = "O título da vaga deve ter no máximo 200 caracteres.")]
         public string JobTitle { get; set; } = string.Empty;
+
+        [MaxLength(15000, ErrorMessage = "A descrição da vaga deve ter no máximo 15.000 caracteres.")]
         public string JobDescription { get; set; } = string.Empty;
     }
 
