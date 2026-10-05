@@ -1,0 +1,28 @@
+<div class="section-header">
+  <h3>Habilidades</h3>
+  <button mat-raised-button color="primary" (click)="openDialog()">
+    <mat-icon>add</mat-icon> Adicionar
+  </button>
+</div>
+
+<div class="skills-grid">
+  <mat-card class="skill-chip" *ngFor="let entry of entries">
+    <mat-card-content>
+      <div class="entry-card-inner">
+        <div>
+          <strong>{{ entry.name }}</strong>
+          <span class="entry-date">{{ entry.category }} · {{ entry.level }}</span>
+        </div>
+        <div class="entry-actions">
+          <button mat-icon-button color="accent" matTooltip="Editar" (click)="openDialog(entry)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Excluir" (click)="delete(entry.id!)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <p class="empty-state" *ngIf="entries.length === 0">Nenhuma habilidade adicionada ainda.</p>
+</div>

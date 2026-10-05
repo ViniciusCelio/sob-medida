@@ -1,0 +1,32 @@
+<div class="section-header">
+  <h3>Certificações</h3>
+  <button mat-raised-button color="primary" (click)="openDialog()">
+    <mat-icon>add</mat-icon> Adicionar
+  </button>
+</div>
+
+<div class="entry-list">
+  <mat-card class="entry-card" *ngFor="let entry of entries">
+    <mat-card-content>
+      <div class="entry-card-inner">
+        <div class="entry-info">
+          <strong>{{ entry.name }}</strong>
+          <span>{{ entry.issuingOrganization }}</span>
+          <span class="entry-date">
+            Emitida em {{ entry.issueDate | date:'MMM yyyy' }} —
+            {{ entry.doesNotExpire ? 'Sem Expiração' : (entry.expirationDate | date:'MMM yyyy') }}
+          </span>
+        </div>
+        <div class="entry-actions">
+          <button mat-icon-button color="accent" matTooltip="Edit" (click)="openDialog(entry)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Delete" (click)="delete(entry.id!)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <p class="empty-state" *ngIf="entries.length === 0">Nenhuma certificação adicionada ainda.</p>
+</div>

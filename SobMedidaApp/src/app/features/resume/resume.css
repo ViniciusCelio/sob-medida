@@ -1,0 +1,15 @@
+.resume-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.resume-header h2 {
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.tab-body {
+  padding: 1.5rem 0.5rem;
+}

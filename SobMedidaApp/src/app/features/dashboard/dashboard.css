@@ -1,0 +1,14 @@
+.action-card {
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.action-card:hover {
+  border-color: #9fa8da !important;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 480px) {
+  div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+}

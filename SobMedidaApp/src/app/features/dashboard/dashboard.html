@@ -1,0 +1,76 @@
+<div style="max-width:720px; margin:2rem auto; padding:0 1rem; display:flex; flex-direction:column; gap:1.25rem;">
+
+  <!-- Cabeçalho -->
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <div mat-card-avatar
+           style="width:48px; height:48px; border-radius:50%; background:#e8eaf6; color:#3f51b5;
+                  display:flex; align-items:center; justify-content:center; font-weight:500; font-size:1rem;">
+        {{ initials }}
+      </div>
+      <mat-card-title>Bem-vindo, {{ fullName }}!</mat-card-title>
+      <mat-card-subtitle>O que você deseja fazer hoje?</mat-card-subtitle>
+      <span style="margin-left:auto; display:flex; align-items:center; gap:6px; font-size:12px; color:#388e3c;">
+        <span style="width:8px; height:8px; border-radius:50%; background:#388e3c; display:inline-block;"></span>
+        Online
+      </span>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Grid de ações -->
+  <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem;">
+
+    <div class="action-card" routerLink="/profile"
+         style="background:#fff; border:1px solid rgba(0,0,0,0.12); border-radius:12px;
+                padding:1.25rem; position:relative; cursor:pointer;
+                display:flex; flex-direction:column; align-items:flex-start; gap:10px; min-height:150px;">
+      <div style="width:44px; height:44px; border-radius:8px; background:#e8eaf6;
+                  display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <mat-icon style="color:#3f51b5; font-size:22px; width:22px; height:22px;">person</mat-icon>
+      </div>
+      <strong style="font-size:14px; font-weight:500; color:rgba(0,0,0,0.87);">Meu Perfil</strong>
+      <span style="font-size:12px; color:rgba(0,0,0,0.54); line-height:1.5;">Visualize e edite suas informações pessoais</span>
+      <mat-icon style="position:absolute; bottom:1rem; right:1rem; font-size:16px; width:16px; height:16px; color:rgba(0,0,0,0.26);">arrow_forward</mat-icon>
+    </div>
+
+    <div class="action-card" routerLink="/resume"
+         style="background:#fff; border:1px solid rgba(0,0,0,0.12); border-radius:12px;
+                padding:1.25rem; position:relative; cursor:pointer;
+                display:flex; flex-direction:column; align-items:flex-start; gap:10px; min-height:150px;">
+      <div style="width:44px; height:44px; border-radius:8px; background:#f3e5f5;
+                  display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <mat-icon style="color:#7b1fa2; font-size:22px; width:22px; height:22px;">auto_awesome</mat-icon>
+      </div>
+      <strong style="font-size:14px; font-weight:500; color:rgba(0,0,0,0.87);">Gerar Currículo</strong>
+      <span style="font-size:12px; color:rgba(0,0,0,0.54); line-height:1.5;">Crie um currículo profissional com inteligência artificial</span>
+      <mat-icon style="position:absolute; bottom:1rem; right:1rem; font-size:16px; width:16px; height:16px; color:rgba(0,0,0,0.26);">arrow_forward</mat-icon>
+    </div>
+
+    <div class="action-card" routerLink="/import"
+         style="background:#fff; border:1px solid rgba(0,0,0,0.12); border-radius:12px;
+                padding:1.25rem; position:relative; cursor:pointer;
+                display:flex; flex-direction:column; align-items:flex-start; gap:10px; min-height:150px;">
+      <div style="width:44px; height:44px; border-radius:8px; background:#e8f5e9;
+                  display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <mat-icon style="color:#388e3c; font-size:22px; width:22px; height:22px;">upload_file</mat-icon>
+      </div>
+      <strong style="font-size:14px; font-weight:500; color:rgba(0,0,0,0.87);">Importar PDF</strong>
+      <span style="font-size:12px; color:rgba(0,0,0,0.54); line-height:1.5;">Importe um currículo existente a partir de um arquivo PDF</span>
+      <mat-icon style="position:absolute; bottom:1rem; right:1rem; font-size:16px; width:16px; height:16px; color:rgba(0,0,0,0.26);">arrow_forward</mat-icon>
+    </div>
+
+    <div class="action-card" (click)="logout()"
+         style="background:#fff; border:1px solid rgba(0,0,0,0.12); border-radius:12px;
+                padding:1.25rem; position:relative; cursor:pointer;
+                display:flex; flex-direction:column; align-items:flex-start; gap:10px; min-height:150px;">
+      <div style="width:44px; height:44px; border-radius:8px; background:#ffebee;
+                  display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <mat-icon style="color:#c62828; font-size:22px; width:22px; height:22px;">logout</mat-icon>
+      </div>
+      <strong style="font-size:14px; font-weight:500; color:rgba(0,0,0,0.87);">Sair</strong>
+      <span style="font-size:12px; color:rgba(0,0,0,0.54); line-height:1.5;">Encerrar sua sessão atual com segurança</span>
+      <mat-icon style="position:absolute; bottom:1rem; right:1rem; font-size:16px; width:16px; height:16px; color:rgba(0,0,0,0.26);">arrow_forward</mat-icon>
+    </div>
+
+  </div>
+</div>

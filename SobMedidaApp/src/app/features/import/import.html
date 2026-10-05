@@ -1,0 +1,540 @@
+<div class="page-container">
+  <div class="import-header">
+    <h2>Importar Currículo</h2>
+    <a routerLink="/dashboard">
+      <button mat-stroked-button>
+        <mat-icon>arrow_back</mat-icon> Voltar ao Painel
+      </button>
+    </a>
+  </div>
+
+  <!-- STEP 1: Upload -->
+  <mat-card *ngIf="step === 'upload'">
+    <mat-card-header>
+      <mat-card-title>Importar do LinkedIn ou Gupy</mat-card-title>
+      <mat-card-subtitle>
+        Faça o upload do seu currículo em PDF exportado do LinkedIn ou Gupy.
+        O sistema irá identificar automaticamente suas informações e preencher seu perfil.
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="upload-area">
+        <mat-icon class="upload-icon">upload_file</mat-icon>
+        <p class="upload-hint">Selecione um arquivo PDF (máximo 5MB)</p>
+
+        <input
+          type="file"
+          accept=".pdf"
+          (change)="onFileSelected($event)"
+          #fileInput
+          style="display: none" />
+
+        <button mat-stroked-button color="primary" (click)="fileInput.click()">
+          <mat-icon>attach_file</mat-icon>
+          Selecionar arquivo
+        </button>
+
+        <div class="selected-file" *ngIf="selectedFile">
+          <mat-icon color="primary">picture_as_pdf</mat-icon>
+          <span>{{ selectedFile.name }}</span>
+        </div>
+      </div>
+
+      <mat-divider style="margin: 1.5rem 0;"></mat-divider>
+
+      <div class="platform-tips">
+        <p class="tips-title">Como exportar o PDF?</p>
+        <div class="tip">
+          <strong>LinkedIn:</strong>
+          Acesse seu perfil → clique em "Mais" → "Salvar como PDF"
+        </div>
+        <div class="tip">
+          <strong>Gupy:</strong>
+          Acesse seu perfil de candidato → clique em "Baixar currículo"
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!selectedFile || isLoadingPreview"
+        (click)="onPreview()">
+        <mat-spinner diameter="20" *ngIf="isLoadingPreview"></mat-spinner>
+        <mat-icon *ngIf="!isLoadingPreview">search</mat-icon>
+        <span>{{ isLoadingPreview ? 'Analisando arquivo...' : 'Analisar arquivo' }}</span>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- STEP 2: Preview & review -->
+  <div *ngIf="step === 'preview' && summary">
+    <mat-card class="summary-card">
+      <mat-card-header>
+        <mat-card-title>Revise antes de salvar</mat-card-title>
+        <mat-card-subtitle>
+          Abra cada seção para conferir, editar ou remover o que foi encontrado no arquivo.
+          Apenas o que estiver marcado será salvo no seu perfil.
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <!-- Personal info -->
+        <mat-expansion-panel
+          *ngIf="personalInfoRow as row"
+          class="category-panel"
+          (opened)="markCategoryReviewed('personalInfo')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon color="primary">person</mat-icon>
+              Informações pessoais
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="category-badges">
+                <mat-icon
+                  class="reviewed-icon"
+                  *ngIf="isCategoryReviewed('personalInfo')"
+                  matTooltip="Revisado">visibility</mat-icon>
+                <span class="edited-chip" *ngIf="row.edited">Editado</span>
+                <span class="discarded-chip" *ngIf="personalInfoDiscarded">Não será salvo</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="personal-info-grid" [class.discarded-row]="personalInfoDiscarded">
+            <mat-form-field appearance="outline">
+              <mat-label>Nome completo</mat-label>
+              <input matInput [(ngModel)]="row.value.fullName" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>E-mail</mat-label>
+              <input matInput [(ngModel)]="row.value.email" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Telefone</mat-label>
+              <input matInput [(ngModel)]="row.value.phone" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>LinkedIn</mat-label>
+              <input matInput [(ngModel)]="row.value.linkedInUrl" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>GitHub</mat-label>
+              <input matInput [(ngModel)]="row.value.gitHubUrl" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Resumo</mat-label>
+              <textarea matInput rows="2" [(ngModel)]="row.value.summary" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Rua</mat-label>
+              <input matInput [(ngModel)]="row.value.address.street" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Número</mat-label>
+              <input matInput [(ngModel)]="row.value.address.number" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Bairro</mat-label>
+              <input matInput [(ngModel)]="row.value.address.neighborhood" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Cidade</mat-label>
+              <input matInput [(ngModel)]="row.value.address.city" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <input matInput [(ngModel)]="row.value.address.state" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>CEP</mat-label>
+              <input matInput [(ngModel)]="row.value.address.zipCode" (ngModelChange)="markEdited(row)" [disabled]="personalInfoDiscarded" />
+            </mat-form-field>
+          </div>
+
+          <div class="panel-actions">
+            <button mat-button (click)="togglePersonalInfo()">
+              <mat-icon>{{ personalInfoDiscarded ? 'undo' : 'delete_outline' }}</mat-icon>
+              {{ personalInfoDiscarded ? 'Restaurar' : 'Não atualizar informações pessoais' }}
+            </button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Experiences -->
+        <mat-expansion-panel
+          *ngIf="experienceRows.length"
+          class="category-panel"
+          (opened)="markCategoryReviewed('experiences')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon color="primary">work</mat-icon>
+              Experiências profissionais
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="category-badges">
+                <span class="count-chip">{{ activeCount(experienceRows) }} de {{ experienceRows.length }} selecionadas</span>
+                <mat-icon
+                  class="reviewed-icon"
+                  *ngIf="isCategoryReviewed('experiences')"
+                  matTooltip="Revisado">visibility</mat-icon>
+                <span class="edited-chip" *ngIf="isCategoryEdited(experienceRows)">Editado</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="item-list">
+            <div class="review-item" *ngFor="let row of experienceRows; trackBy: trackByRowId" [class.discarded-row]="row.discarded">
+              <div class="item-fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cargo</mat-label>
+                  <input matInput [(ngModel)]="row.value.jobTitle" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Empresa</mat-label>
+                  <input matInput [(ngModel)]="row.value.company" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Local</mat-label>
+                  <input matInput [(ngModel)]="row.value.location" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Início</mat-label>
+                  <input matInput [(ngModel)]="row.value.startDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Fim</mat-label>
+                  <input matInput [(ngModel)]="row.value.endDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded || row.value.isCurrentJob" />
+                </mat-form-field>
+                <mat-checkbox
+                  [(ngModel)]="row.value.isCurrentJob"
+                  (ngModelChange)="markEdited(row)"
+                  [disabled]="row.discarded">
+                  Emprego atual
+                </mat-checkbox>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Descrição</mat-label>
+                  <textarea matInput rows="3" [(ngModel)]="row.value.description" (ngModelChange)="markEdited(row)" [disabled]="row.discarded"></textarea>
+                </mat-form-field>
+              </div>
+              <div class="item-actions">
+                <span class="edited-tag" *ngIf="row.edited">Editado</span>
+                <button mat-icon-button [matTooltip]="row.discarded ? 'Restaurar' : 'Descartar'" (click)="toggleDiscard(row)">
+                  <mat-icon>{{ row.discarded ? 'undo' : 'delete_outline' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button mat-button (click)="discardCategory(experienceRows)">Descartar todas</button>
+            <button mat-button (click)="restoreCategory(experienceRows)">Restaurar todas</button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Educations -->
+        <mat-expansion-panel
+          *ngIf="educationRows.length"
+          class="category-panel"
+          (opened)="markCategoryReviewed('educations')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon color="primary">school</mat-icon>
+              Formação acadêmica
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="category-badges">
+                <span class="count-chip">{{ activeCount(educationRows) }} de {{ educationRows.length }} selecionadas</span>
+                <mat-icon
+                  class="reviewed-icon"
+                  *ngIf="isCategoryReviewed('educations')"
+                  matTooltip="Revisado">visibility</mat-icon>
+                <span class="edited-chip" *ngIf="isCategoryEdited(educationRows)">Editado</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="item-list">
+            <div class="review-item" *ngFor="let row of educationRows; trackBy: trackByRowId" [class.discarded-row]="row.discarded">
+              <div class="item-fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Instituição</mat-label>
+                  <input matInput [(ngModel)]="row.value.institution" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Curso / grau</mat-label>
+                  <input matInput [(ngModel)]="row.value.degree" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Área de estudo</mat-label>
+                  <input matInput [(ngModel)]="row.value.fieldOfStudy" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Local</mat-label>
+                  <input matInput [(ngModel)]="row.value.location" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Início</mat-label>
+                  <input matInput [(ngModel)]="row.value.startDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Fim</mat-label>
+                  <input matInput [(ngModel)]="row.value.endDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded || row.value.isCurrentlyStudying" />
+                </mat-form-field>
+                <mat-checkbox
+                  [(ngModel)]="row.value.isCurrentlyStudying"
+                  (ngModelChange)="markEdited(row)"
+                  [disabled]="row.discarded">
+                  Em andamento
+                </mat-checkbox>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Descrição</mat-label>
+                  <textarea matInput rows="2" [(ngModel)]="row.value.description" (ngModelChange)="markEdited(row)" [disabled]="row.discarded"></textarea>
+                </mat-form-field>
+              </div>
+              <div class="item-actions">
+                <span class="edited-tag" *ngIf="row.edited">Editado</span>
+                <button mat-icon-button [matTooltip]="row.discarded ? 'Restaurar' : 'Descartar'" (click)="toggleDiscard(row)">
+                  <mat-icon>{{ row.discarded ? 'undo' : 'delete_outline' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button mat-button (click)="discardCategory(educationRows)">Descartar todas</button>
+            <button mat-button (click)="restoreCategory(educationRows)">Restaurar todas</button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Skills -->
+        <mat-expansion-panel
+          *ngIf="skillRows.length"
+          class="category-panel"
+          (opened)="markCategoryReviewed('skills')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon color="primary">star</mat-icon>
+              Habilidades
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="category-badges">
+                <span class="count-chip">{{ activeCount(skillRows) }} de {{ skillRows.length }} selecionadas</span>
+                <mat-icon
+                  class="reviewed-icon"
+                  *ngIf="isCategoryReviewed('skills')"
+                  matTooltip="Revisado">visibility</mat-icon>
+                <span class="edited-chip" *ngIf="isCategoryEdited(skillRows)">Editado</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="item-list">
+            <div class="review-item" *ngFor="let row of skillRows; trackBy: trackByRowId" [class.discarded-row]="row.discarded">
+              <div class="item-fields">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nome</mat-label>
+                  <input matInput [(ngModel)]="row.value.name" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Categoria</mat-label>
+                  <input matInput [(ngModel)]="row.value.category" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Nível</mat-label>
+                  <input matInput [(ngModel)]="row.value.level" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+              </div>
+              <div class="item-actions">
+                <span class="edited-tag" *ngIf="row.edited">Editado</span>
+                <button mat-icon-button [matTooltip]="row.discarded ? 'Restaurar' : 'Descartar'" (click)="toggleDiscard(row)">
+                  <mat-icon>{{ row.discarded ? 'undo' : 'delete_outline' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button mat-button (click)="discardCategory(skillRows)">Descartar todas</button>
+            <button mat-button (click)="restoreCategory(skillRows)">Restaurar todas</button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Projects -->
+        <mat-expansion-panel
+          *ngIf="projectRows.length"
+          class="category-panel"
+          (opened)="markCategoryReviewed('projects')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon color="primary">folder</mat-icon>
+              Projetos
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="category-badges">
+                <span class="count-chip">{{ activeCount(projectRows) }} de {{ projectRows.length }} selecionados</span>
+                <mat-icon
+                  class="reviewed-icon"
+                  *ngIf="isCategoryReviewed('projects')"
+                  matTooltip="Revisado">visibility</mat-icon>
+                <span class="edited-chip" *ngIf="isCategoryEdited(projectRows)">Editado</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="item-list">
+            <div class="review-item" *ngFor="let row of projectRows; trackBy: trackByRowId" [class.discarded-row]="row.discarded">
+              <div class="item-fields">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nome do projeto</mat-label>
+                  <input matInput [(ngModel)]="row.value.name" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Descrição</mat-label>
+                  <textarea matInput rows="2" [(ngModel)]="row.value.description" (ngModelChange)="markEdited(row)" [disabled]="row.discarded"></textarea>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Tecnologias</mat-label>
+                  <input matInput [(ngModel)]="row.value.technologies" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>URL do projeto</mat-label>
+                  <input matInput [(ngModel)]="row.value.projectUrl" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>GitHub</mat-label>
+                  <input matInput [(ngModel)]="row.value.gitHubUrl" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Início</mat-label>
+                  <input matInput [(ngModel)]="row.value.startDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Fim</mat-label>
+                  <input matInput [(ngModel)]="row.value.endDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+              </div>
+              <div class="item-actions">
+                <span class="edited-tag" *ngIf="row.edited">Editado</span>
+                <button mat-icon-button [matTooltip]="row.discarded ? 'Restaurar' : 'Descartar'" (click)="toggleDiscard(row)">
+                  <mat-icon>{{ row.discarded ? 'undo' : 'delete_outline' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button mat-button (click)="discardCategory(projectRows)">Descartar todos</button>
+            <button mat-button (click)="restoreCategory(projectRows)">Restaurar todos</button>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Certifications -->
+        <mat-expansion-panel
+          *ngIf="certificationRows.length"
+          class="category-panel"
+          (opened)="markCategoryReviewed('certifications')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon color="primary">workspace_premium</mat-icon>
+              Certificações
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="category-badges">
+                <span class="count-chip">{{ activeCount(certificationRows) }} de {{ certificationRows.length }} selecionadas</span>
+                <mat-icon
+                  class="reviewed-icon"
+                  *ngIf="isCategoryReviewed('certifications')"
+                  matTooltip="Revisado">visibility</mat-icon>
+                <span class="edited-chip" *ngIf="isCategoryEdited(certificationRows)">Editado</span>
+              </span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="item-list">
+            <div class="review-item" *ngFor="let row of certificationRows; trackBy: trackByRowId" [class.discarded-row]="row.discarded">
+              <div class="item-fields">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nome da certificação</mat-label>
+                  <input matInput [(ngModel)]="row.value.name" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Organização emissora</mat-label>
+                  <input matInput [(ngModel)]="row.value.issuingOrganization" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Data de emissão</mat-label>
+                  <input matInput [(ngModel)]="row.value.issueDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Data de expiração</mat-label>
+                  <input matInput [(ngModel)]="row.value.expirationDate" (ngModelChange)="markEdited(row)" [disabled]="row.discarded || row.value.doesNotExpire" />
+                </mat-form-field>
+                <mat-checkbox
+                  [(ngModel)]="row.value.doesNotExpire"
+                  (ngModelChange)="markEdited(row)"
+                  [disabled]="row.discarded">
+                  Não expira
+                </mat-checkbox>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>URL da credencial</mat-label>
+                  <input matInput [(ngModel)]="row.value.credentialUrl" (ngModelChange)="markEdited(row)" [disabled]="row.discarded" />
+                </mat-form-field>
+              </div>
+              <div class="item-actions">
+                <span class="edited-tag" *ngIf="row.edited">Editado</span>
+                <button mat-icon-button [matTooltip]="row.discarded ? 'Restaurar' : 'Descartar'" (click)="toggleDiscard(row)">
+                  <mat-icon>{{ row.discarded ? 'undo' : 'delete_outline' }}</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button mat-button (click)="discardCategory(certificationRows)">Descartar todas</button>
+            <button mat-button (click)="restoreCategory(certificationRows)">Restaurar todas</button>
+          </div>
+        </mat-expansion-panel>
+
+        <div class="summary-empty" *ngIf="!hasSomethingToImport()">
+          <mat-icon>info</mat-icon>
+          <p>Nada será importado com a seleção atual. Restaure algum item acima ou cancele a importação.</p>
+        </div>
+
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-stroked-button (click)="onCancel()">
+          <mat-icon>close</mat-icon> Cancelar
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!hasSomethingToImport() || isLoadingConfirm"
+          (click)="onConfirm()">
+          <mat-spinner diameter="20" *ngIf="isLoadingConfirm"></mat-spinner>
+          <mat-icon *ngIf="!isLoadingConfirm">save</mat-icon>
+          <span>{{ isLoadingConfirm ? 'Salvando...' : 'Confirmar e salvar' }}</span>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- STEP 3: Done -->
+  <mat-card *ngIf="step === 'done'" class="done-card">
+    <mat-card-content>
+      <div class="done-content">
+        <mat-icon class="done-icon">check_circle</mat-icon>
+        <h3>Importação concluída!</h3>
+        <p>Seu perfil foi atualizado com sucesso com as informações do arquivo.</p>
+        <button mat-raised-button color="primary" (click)="goToProfile()">
+          <mat-icon>person</mat-icon> Ver meu perfil
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

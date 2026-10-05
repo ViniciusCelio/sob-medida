@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>{{ data.entry ? 'Editar Experiência' : 'Nova Experiência' }}</h2>
+
+<mat-dialog-content>
+    <form>
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Cargo</mat-label>
+                <input matInput [(ngModel)]="form.jobTitle" name="jobTitle" placeholder="Analista de Sistemas" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Empresa</mat-label>
+                <input matInput [(ngModel)]="form.company" name="company" />
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Localização</mat-label>
+            <input matInput [(ngModel)]="form.location" name="location" placeholder="Belo Horizonte, MG" />
+        </mat-form-field>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data de Início</mat-label>
+                <input matInput type="date" [(ngModel)]="form.startDate" name="startDate" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width" *ngIf="!form.isCurrentJob">
+                <mat-label>Data de Fim</mat-label>
+                <input matInput type="date" [(ngModel)]="form.endDate" name="endDate" />
+            </mat-form-field>
+        </div>
+
+        <mat-checkbox [(ngModel)]="form.isCurrentJob" name="isCurrentJob">
+            Trabalho aqui atualmente
+        </mat-checkbox>
+
+        <mat-form-field appearance="outline" class="full-width" style="margin-top: 1rem;">
+            <mat-label>Descrição</mat-label>
+            <textarea matInput [(ngModel)]="form.description" name="description" rows="5"
+                placeholder="Descreva suas responsabilidades e conquistas..."></textarea>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()">Salvar</button>
+</mat-dialog-actions>

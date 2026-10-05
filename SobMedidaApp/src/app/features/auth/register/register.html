@@ -1,0 +1,197 @@
+<div style="min-height:100vh; display:flex; align-items:center; justify-content:center;
+            background:#f5f6fa; padding:1rem;">
+
+  <div style="width:100%; max-width:420px; background:#fff;
+              border:1px solid rgba(0,0,0,0.12);
+              border-radius:16px; overflow:hidden;">
+
+    <!-- Cabeçalho -->
+    <div style="background:#3f51b5;
+                padding:2rem 2rem 1.75rem;
+                text-align:center;">
+
+      <div style="width:56px; height:56px;
+                  border-radius:14px;
+                  background:rgba(255,255,255,0.15);
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  margin:0 auto 1rem;">
+
+        <mat-icon style="color:#fff;
+                         font-size:28px;
+                         width:28px;
+                         height:28px;">
+          person_add
+        </mat-icon>
+      </div>
+
+      <h1 style="color:#fff;
+                 font-size:1.4rem;
+                 font-weight:500;
+                 margin:0;">
+        Criar Conta
+      </h1>
+    </div>
+
+    <!-- Corpo -->
+    <div style="padding:2rem;">
+
+      <h2 style="font-size:1rem;
+                 font-weight:500;
+                 color:rgba(0,0,0,0.6);
+                 margin:0 0 1.5rem;
+                 text-transform:uppercase;
+                 letter-spacing:0.5px;">
+        Cadastro
+      </h2>
+
+      <form class="auth-form"
+            (ngSubmit)="onSubmit()"
+            style="display:flex;
+                   flex-direction:column;
+                   gap:12px;">
+
+        <!-- Nome -->
+        <mat-form-field appearance="outline" style="width:100%;">
+          <mat-label>Nome Completo</mat-label>
+
+          <input matInput
+                 type="text"
+                 [(ngModel)]="fullName"
+                 name="fullName"
+                 required />
+
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline" style="width:100%;">
+          <mat-label>E-mail</mat-label>
+
+          <input matInput
+                 type="email"
+                 [(ngModel)]="email"
+                 name="email"
+                 required />
+
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <!-- Senha -->
+        <mat-form-field appearance="outline" style="width:100%;">
+          <mat-label>Senha</mat-label>
+
+          <input matInput
+                 [type]="hidePassword ? 'password' : 'text'"
+                 [(ngModel)]="password"
+                 name="password"
+                 required />
+
+          <button mat-icon-button
+                  matSuffix
+                  type="button"
+                  aria-label="Mostrar ou ocultar senha"
+                  (click)="hidePassword = !hidePassword">
+
+            <mat-icon>
+              {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+          </button>
+
+          <mat-hint>
+            Mínimo de 8 caracteres e pelo menos um número
+          </mat-hint>
+        </mat-form-field>
+
+        <!-- Mensagem de erro -->
+        @if (errorMessage) {
+          <div style="display:flex;
+                      align-items:center;
+                      gap:8px;
+                      padding:10px 12px;
+                      background:#ffebee;
+                      border-radius:8px;">
+
+            <mat-icon style="color:#c62828;
+                             font-size:18px;
+                             width:18px;
+                             height:18px;
+                             flex-shrink:0;">
+              error_outline
+            </mat-icon>
+
+            <span style="font-size:13px;
+                         color:#c62828;">
+              {{ errorMessage }}
+            </span>
+          </div>
+        }
+
+        <!-- Mensagem de sucesso -->
+        @if (successMessage) {
+          <div style="display:flex;
+                      align-items:center;
+                      gap:8px;
+                      padding:10px 12px;
+                      background:#e8f5e9;
+                      border-radius:8px;">
+
+            <mat-icon style="color:#2e7d32;
+                             font-size:18px;
+                             width:18px;
+                             height:18px;
+                             flex-shrink:0;">
+              check_circle_outline
+            </mat-icon>
+
+            <span style="font-size:13px;
+                         color:#2e7d32;">
+              {{ successMessage }}
+            </span>
+          </div>
+        }
+
+        <!-- Botão -->
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="isLoading"
+                style="width:100%;
+                       height:44px;
+                       margin-top:4px;
+                       display:flex;
+                       align-items:center;
+                       justify-content:center;">
+
+          @if (isLoading) {
+            <mat-spinner diameter="22"></mat-spinner>
+          } @else {
+            <span>Cadastrar</span>
+          }
+
+        </button>
+
+      </form>
+
+      <!-- Rodapé -->
+      <p style="text-align:center;
+                font-size:13px;
+                color:rgba(0,0,0,0.5);
+                margin:1.5rem 0 0;">
+
+        Já tem uma conta?
+
+        <a routerLink="/login"
+           style="color:#3f51b5;
+                  text-decoration:none;
+                  font-weight:500;">
+
+          Faça login aqui
+        </a>
+      </p>
+
+    </div>
+
+  </div>
+</div>

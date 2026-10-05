@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>{{ data.entry ? 'Editar Projeto' : 'Novo Projeto' }}</h2>
+
+<mat-dialog-content>
+    <form>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nome do Projeto</mat-label>
+            <input matInput [(ngModel)]="form.name" name="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tecnologias Utilizadas</mat-label>
+            <input matInput [(ngModel)]="form.technologies" name="technologies"
+                placeholder="Angular, .NET, PostgreSQL..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descrição</mat-label>
+            <textarea matInput [(ngModel)]="form.description" name="description" rows="4"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>URL do Projeto</mat-label>
+                <input matInput [(ngModel)]="form.projectUrl" name="projectUrl" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>URL do GitHub</mat-label>
+                <input matInput [(ngModel)]="form.gitHubUrl" name="gitHubUrl" />
+            </mat-form-field>
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data de Início</mat-label>
+                <input matInput type="date" [(ngModel)]="form.startDate" name="startDate" min="1900-01-01" max="2099-12-31" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data de Término</mat-label>
+                <input matInput type="date" [(ngModel)]="form.endDate" name="endDate" min="1900-01-01" max="2099-12-31" />
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="isLoading">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">{{ data.entry ? 'Atualizar' : 'Salvar' }}</span>
+    </button>
+</mat-dialog-actions>

@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ data.entry ? 'Editar Certificação' : 'Nova Certificação' }}</h2>
+
+<mat-dialog-content>
+    <form>
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nome da Certificação</mat-label>
+                <input matInput [(ngModel)]="form.name" name="name" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Organização Emissora</mat-label>
+                <input matInput [(ngModel)]="form.issuingOrganization" name="issuingOrganization" />
+            </mat-form-field>
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data de Emissão</mat-label>
+                <input matInput type="date" [(ngModel)]="form.issueDate" name="issueDate" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width" *ngIf="!form.doesNotExpire">
+                <mat-label>Data de Expiração</mat-label>
+                <input matInput type="date" [(ngModel)]="form.expirationDate" name="expirationDate" />
+            </mat-form-field>
+        </div>
+
+        <mat-checkbox [(ngModel)]="form.doesNotExpire" name="doesNotExpire" (change)="onDoesNotExpireChange()">
+            Esta certificação não expira
+        </mat-checkbox>
+
+        <mat-form-field appearance="outline" class="full-width" style="margin-top: 1rem;">
+            <mat-label>URL da Credencial</mat-label>
+            <input matInput [(ngModel)]="form.credentialUrl" name="credentialUrl" placeholder="https://..." />
+            <mat-icon matSuffix>link</mat-icon>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="isLoading">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">{{ data.entry ? 'Atualizar' : 'Salvar' }}</span>
+    </button>
+</mat-dialog-actions>

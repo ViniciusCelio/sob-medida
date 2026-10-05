@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>{{ data.entry ? 'Editar Habilidade' : 'Nova Habilidade' }}</h2>
+
+<mat-dialog-content>
+    <form>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Habilidade</mat-label>
+            <input matInput [(ngModel)]="form.name" name="name" placeholder="TypeScript, Angular, SAP..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Categoria</mat-label>
+            <input matInput [(ngModel)]="form.category" name="category" placeholder="Frontend, Backend, ERP..." />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nível</mat-label>
+            <mat-select [(ngModel)]="form.level" name="level">
+                <mat-option *ngFor="let level of levels" [value]="level">{{ level }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="isLoading">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">{{ data.entry ? 'Atualizar' : 'Salvar' }}</span>
+    </button>
+</mat-dialog-actions>

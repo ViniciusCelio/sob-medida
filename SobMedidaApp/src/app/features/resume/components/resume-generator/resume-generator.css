@@ -1,0 +1,109 @@
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.result-header h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.result-date {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.result-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.resume-output {
+  background: #fafafa;
+}
+
+.resume-content {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #333;
+}
+
+.resume-preview {
+  margin-top: 1.5rem;
+}
+
+.preview-header {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.preview-header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.preview-contact {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.preview-links {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.preview-section {
+  margin-top: 1.2rem;
+}
+
+.preview-section h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #333;
+  padding-bottom: 3px;
+  margin-bottom: 0.75rem;
+}
+
+.preview-entry {
+  margin-bottom: 0.75rem;
+}
+
+.entry-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.entry-period {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.entry-location {
+  font-size: 0.85rem;
+  color: #777;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.preview-section ul {
+  margin: 0.3rem 0 0 1rem;
+  padding: 0;
+}
+
+.preview-section ul li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #444;
+}

@@ -1,0 +1,48 @@
+<div class="section-header">
+  <h3>Experiências Profissionais</h3>
+
+  <button mat-raised-button color="primary" (click)="openDialog()">
+    <mat-icon>add</mat-icon> Adicionar
+  </button>
+</div>
+
+<div class="entry-list">
+  <mat-card class="entry-card" *ngFor="let entry of entries">
+    <mat-card-content>
+      <div class="entry-card-inner">
+
+        <div class="entry-info">
+          <strong>{{ entry.jobTitle }}</strong> — {{ entry.company }}
+
+          <span class="entry-date">
+            {{ entry.startDate | date:'MMM yyyy' }} —
+            {{ entry.isCurrentJob ? 'Atual' : (entry.endDate | date:'MMM yyyy') }}
+          </span>
+
+          <span class="entry-location">
+            {{ entry.location }}
+          </span>
+
+          <p class="entry-description">
+            {{ entry.description }}
+          </p>
+        </div>
+
+        <div class="entry-actions">
+          <button mat-icon-button color="accent" matTooltip="Editar" (click)="openDialog(entry)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" matTooltip="Excluir" (click)="delete(entry.id!)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <p class="empty-state" *ngIf="entries.length === 0">
+    Nenhuma experiência cadastrada.
+  </p>
+</div>

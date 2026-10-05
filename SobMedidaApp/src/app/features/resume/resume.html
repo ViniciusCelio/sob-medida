@@ -1,0 +1,23 @@
+<div class="page-container">
+  <div class="resume-header">
+    <h2>Gerador de Currículos</h2>
+    <a routerLink="/dashboard">
+      <button mat-stroked-button>
+        <mat-icon>arrow_back</mat-icon> Voltar ao Painel
+      </button>
+    </a>
+  </div>
+
+  <mat-tab-group animationDuration="200ms">
+    <mat-tab label="Gerar currículo">
+      <div class="tab-body">
+        <app-resume-generator />
+      </div>
+    </mat-tab>
+    <mat-tab label="Histórico">
+      <div class="tab-body">
+        <app-resume-history />
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

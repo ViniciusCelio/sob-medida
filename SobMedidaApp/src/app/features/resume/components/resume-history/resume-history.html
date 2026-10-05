@@ -1,0 +1,127 @@
+<div *ngIf="isLoading" class="loading-state">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<div *ngIf="!isLoading && !selectedResume">
+  <p class="empty-state" *ngIf="resumes.length === 0">
+    Nenhum currículo foi gerado ainda. Acesse a aba Gerar para criar o seu primeiro.
+  </p>
+
+  <div class="history-list">
+    <mat-card class="history-card" *ngFor="let resume of resumes" (click)="select(resume)">
+      <mat-card-content>
+        <div class="history-card-inner">
+          <div>
+            <strong>{{ resume.jobTitle }}</strong>
+            <span class="entry-date">
+              {{ resume.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+          <mat-icon color="primary">chevron_right</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div *ngIf="selectedResume && !isLoading">
+  <div class="result-header">
+    <div>
+      <h3>{{ selectedResume.jobTitle }}</h3>
+      <span class="result-date">
+        Gerado em {{ selectedResume.createdAt | date:'dd/MM/yyyy HH:mm' }}
+      </span>
+    </div>
+    <div class="result-actions">
+      <button mat-raised-button color="primary" (click)="downloadPdf(selectedResume)">
+        <mat-icon>download</mat-icon> Baixar PDF
+      </button>
+      <button mat-stroked-button color="warn" (click)="delete(selectedResume.id)">
+        <mat-icon>delete</mat-icon> Excluir
+      </button>
+      <button mat-stroked-button (click)="back()">
+        <mat-icon>arrow_back</mat-icon> Voltar ao Histórico
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="resume-preview" *ngIf="parsedContent">
+    <mat-card-content>
+
+      <!-- Header -->
+      <div class="preview-header">
+        <h2>{{ parsedContent.personalInfo.fullName }}</h2>
+        <p class="preview-contact">
+          {{ parsedContent.personalInfo.email }}
+          <span *ngIf="parsedContent.personalInfo.phone"> | {{ parsedContent.personalInfo.phone }}</span>
+          <span *ngIf="parsedContent.personalInfo.location"> | {{ parsedContent.personalInfo.location }}</span>
+        </p>
+        <p class="preview-links">
+          <span *ngIf="parsedContent.personalInfo.linkedInUrl">{{ parsedContent.personalInfo.linkedInUrl }}</span>
+          <span *ngIf="parsedContent.personalInfo.gitHubUrl"> | {{ parsedContent.personalInfo.gitHubUrl }}</span>
+        </p>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Summary -->
+      <div class="preview-section" *ngIf="parsedContent.summary">
+        <h4>RESUMO PROFISSIONAL</h4>
+        <p>{{ parsedContent.summary }}</p>
+      </div>
+
+      <!-- Experience -->
+      <div class="preview-entry" *ngFor="let exp of parsedContent.experience">
+        <div class="entry-title">
+          <strong>{{ exp.jobTitle }} — {{ exp.company }}</strong>
+          <span class="entry-period">{{ exp.period }}</span>
+        </div>
+        <span class="entry-location">{{ exp.location }}</span>
+        <p class="entry-description">{{ exp.description }}</p>
+      </div>
+
+      <!-- Education -->
+      <div class="preview-section" *ngIf="(parsedContent.education?.length || 0) > 0">
+        <h4>FORMAÇÃO ACADÊMICA</h4>
+        <div class="preview-entry" *ngFor="let edu of parsedContent.education">
+          <div class="entry-title">
+            <strong>{{ edu.degree }}</strong>
+            <span class="entry-period">{{ edu.period }}</span>
+          </div>
+          <span class="entry-location">{{ edu.institution }} | {{ edu.location }}</span>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div *ngFor="let group of parsedContent.skills">
+        <p><strong>{{ group.category }}:</strong> {{ group.items }}</p>
+      </div>
+
+      <!-- Projects -->
+      <div class="preview-entry" *ngFor="let proj of parsedContent.projects">
+        <strong>{{ proj.name }}</strong>
+        <span class="entry-location">{{ proj.technologies }}</span>
+        <p class="entry-description">{{ proj.description }}</p>
+      </div>
+
+      <!-- Certifications -->
+      <div class="preview-section" *ngIf="(parsedContent.certifications?.length || 0) > 0">
+        <h4>CERTIFICAÇÕES</h4>
+        <ul>
+          <li *ngFor="let cert of parsedContent.certifications">
+            {{ cert.name }} — {{ cert.issuingOrganization }} ({{ cert.date }})
+          </li>
+        </ul>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Fallback caso o JSON não seja parseável -->
+  <mat-card *ngIf="!parsedContent">
+    <mat-card-content>
+      <pre class="resume-content">{{ selectedResume.generatedContent }}</pre>
+    </mat-card-content>
+  </mat-card>
+
+</div>

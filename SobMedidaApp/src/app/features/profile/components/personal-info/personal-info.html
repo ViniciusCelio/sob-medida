@@ -1,0 +1,110 @@
+<form *ngIf="form" (keydown.enter)="$event.preventDefault()" (ngSubmit)="onSubmit()">
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nome Completo</mat-label>
+      <input matInput [(ngModel)]="form.fullName" name="fullName" required [disabled]="!isEditMode">
+      <mat-icon matSuffix>person</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>E-mail</mat-label>
+      <input matInput type="email" [(ngModel)]="form.email" name="email" required [disabled]="!isEditMode" />
+      <mat-icon matSuffix>email</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Telefone</mat-label>
+      <input
+        matInput
+        [(ngModel)]="form.phone"
+        name="phone"
+        placeholder="(31) 99999-9999"
+        [disabled]="!isEditMode"
+        mask="(00) 00000-0000"
+      />
+      <mat-icon matSuffix>phone</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <h3 class="mat-h3" style="margin-top: 16px;">Endereço</h3>
+  
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>CEP</mat-label>
+      <input matInput 
+             [ngModel]="form.address.zipCode" 
+             (ngModelChange)="onCepChange($event)"
+             name="zipCode" 
+             placeholder="00000-000" 
+             maxlength="9"
+             (blur)="searchCep()" 
+             [disabled]="!isEditMode" />
+      <mat-icon matSuffix *ngIf="!isLoadingCep">markunread_mailbox</mat-icon>
+      <mat-spinner matSuffix diameter="20" *ngIf="isLoadingCep"></mat-spinner>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Estado (UF)</mat-label>
+      <input matInput [(ngModel)]="form.address.state" name="state" placeholder="MG" readonly [disabled]="!isEditMode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cidade</mat-label>
+      <input matInput [(ngModel)]="form.address.city" name="city" placeholder="Belo Horizonte" readonly [disabled]="!isEditMode" />
+      <mat-icon matSuffix>location_city</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline" style="flex: 2;">
+      <mat-label>Rua/Logradouro</mat-label>
+      <input matInput [(ngModel)]="form.address.street" name="street" readonly [disabled]="!isEditMode" />
+      <mat-icon matSuffix>signpost</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="flex: 1;">
+      <mat-label>Número</mat-label>
+      <input matInput [(ngModel)]="form.address.number" name="number" [disabled]="!isEditMode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="flex: 2;">
+      <mat-label>Bairro</mat-label>
+      <input matInput [(ngModel)]="form.address.neighborhood" name="neighborhood" readonly [disabled]="!isEditMode" />
+    </mat-form-field>
+  </div>
+
+  <h3 class="mat-h3" style="margin-top: 16px;">Links</h3>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>URL do LinkedIn</mat-label>
+      <input matInput [(ngModel)]="form.linkedInUrl" name="linkedInUrl" [disabled]="!isEditMode" />
+      <mat-icon matSuffix>link</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>URL do GitHub</mat-label>
+      <input matInput [(ngModel)]="form.gitHubUrl" name="gitHubUrl" [disabled]="!isEditMode" />
+      <mat-icon matSuffix>code</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Resumo Profissional</mat-label>
+    <textarea matInput [(ngModel)]="form.summary" name="summary" rows="5"
+      placeholder="Breve descrição da sua trajetória profissional..." [disabled]="!isEditMode"></textarea>
+  </mat-form-field>
+
+  <div class="form-actions" style="display: flex; gap: 10px;">
+    <button mat-stroked-button type="button" *ngIf="!isEditMode" (click)="enableEditMode()">
+      Editar Detalhes
+    </button>
+
+    <button mat-raised-button color="primary" type="submit" *ngIf="isEditMode" [disabled]="isLoading">
+      <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+      <span *ngIf="!isLoading">{{ isEditing ? 'Atualizar' : 'Salvar' }}</span>
+    </button>
+  </div>
+</form>
