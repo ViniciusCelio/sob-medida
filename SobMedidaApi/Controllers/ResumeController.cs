@@ -94,7 +94,7 @@ namespace SobMedidaApi.Controllers
                 }
                 catch (JsonException ex)
                 {
-                    attemptResults.Add(new GenerationAttemptDTO { Attempt = attempt, IsValidJson = false });
+                    attemptResults.Add(new GenerationAttemptDTO { Attempt = attempt, IsValidJson = false, Content = cleanJson });
 
                     if (attempt == maxAttempts)
                     {
@@ -112,7 +112,8 @@ namespace SobMedidaApi.Controllers
                     Attempt = attempt,
                     IsValidJson = true,
                     IsValid = validation.IsValid,
-                    Violations = validation.Violations
+                    Violations = validation.Violations,
+                    Content = cleanJson
                 });
 
                 if (validation.IsValid)

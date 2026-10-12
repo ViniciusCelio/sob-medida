@@ -104,6 +104,7 @@ namespace SobMedidaApi.DTOs
         public bool IsValidJson { get; set; }
         public bool? IsValid { get; set; } // null quando o JSON é inválido e o validador não roda
         public List<string> Violations { get; set; } = new();
+        public string Content { get; set; } = string.Empty; // currículo gerado nesta tentativa
     }
 
     public class GenerateResumeResponseDTO : GeneratedResumeDTO
