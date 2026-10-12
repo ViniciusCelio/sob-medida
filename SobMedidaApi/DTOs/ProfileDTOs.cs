@@ -97,6 +97,20 @@ namespace SobMedidaApi.DTOs
         public string GeneratedContent { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
     }
+
+    public class GenerationAttemptDTO
+    {
+        public int Attempt { get; set; }
+        public bool IsValidJson { get; set; }
+        public bool? IsValid { get; set; } // null quando o JSON é inválido e o validador não roda
+        public List<string> Violations { get; set; } = new();
+    }
+
+    public class GenerateResumeResponseDTO : GeneratedResumeDTO
+    {
+        public int Attempts { get; set; }
+        public List<GenerationAttemptDTO> Validations { get; set; } = new();
+    }
     // --- Import DTOs ---
 
     public class ImportAddressDTO

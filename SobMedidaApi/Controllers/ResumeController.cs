@@ -80,6 +80,7 @@ namespace SobMedidaApi.Controllers
             // Etapa 3 — Gerar e validar o currículo com até 2 tentativas
             string cleanJson = string.Empty;
             ResumeValidationResult? validation = null;
+            var attemptResults = new List<GenerationAttemptDTO>();
             int maxAttempts = 2;
 
             for (int attempt = 1; attempt <= maxAttempts; attempt++)
@@ -93,6 +94,8 @@ namespace SobMedidaApi.Controllers
                 }
                 catch (JsonException ex)
                 {
+                    attemptResults.Add(new GenerationAttemptDTO { Attempt = attempt, IsValidJson = false });
+
                     if (attempt == maxAttempts)
                     {
                         _logger.LogError(ex, "Resposta da IA não é um JSON válido");
@@ -104,6 +107,13 @@ namespace SobMedidaApi.Controllers
 
                 // Etapa 4 — Validar o currículo gerado
                 validation = await _validator.ValidateAsync(profileBlock, cleanJson);
+                attemptResults.Add(new GenerationAttemptDTO
+                {
+                    Attempt = attempt,
+                    IsValidJson = true,
+                    IsValid = validation.IsValid,
+                    Violations = validation.Violations
+                });
 
                 if (validation.IsValid)
                     break;
@@ -113,7 +123,9 @@ namespace SobMedidaApi.Controllers
                     return StatusCode(422, new
                     {
                         message = "O currículo gerado contém inconsistências em relação ao seu perfil e não pôde ser corrigido automaticamente. Tente novamente.",
-                        violations = validation.Violations
+                        violations = validation.Violations,
+                        attempts = attemptResults.Count,
+                        validations = attemptResults
                     });
                 }
             }
@@ -131,13 +143,15 @@ namespace SobMedidaApi.Controllers
             _context.GeneratedResumes.Add(resume);
             await _context.SaveChangesAsync();
 
-            return Ok(new GeneratedResumeDTO
+            return Ok(new GenerateResumeResponseDTO
             {
                 Id = resume.Id,
                 JobTitle = resume.JobTitle,
                 JobDescription = resume.JobDescription,
                 GeneratedContent = resume.GeneratedContent,
-                CreatedAt = resume.CreatedAt
+                CreatedAt = resume.CreatedAt,
+                Attempts = attemptResults.Count,
+                Validations = attemptResults
             });
         }
         private string CleanGeminiResponse(string raw)

@@ -113,11 +113,6 @@ namespace SobMedidaApi.Services
         }
         """;
     }
-    private string Truncate(string text, int maxLength = 300)
-    {
-      if (string.IsNullOrWhiteSpace(text)) return string.Empty;
-      return text.Length <= maxLength ? text : text.Substring(0, maxLength) + "...";
-    }
 
     public string BuildJobExtractionPrompt(string jobDescription)
     {
@@ -285,7 +280,7 @@ namespace SobMedidaApi.Services
           profileBlock += $"""
             - {exp.JobTitle} na {exp.Company} ({exp.Location})
               Período: {exp.StartDate:MMM yyyy} até {endDate}
-              Descrição: {Truncate(exp.Description)}
+              Descrição: {exp.Description}
 
             """;
         }
@@ -297,9 +292,12 @@ namespace SobMedidaApi.Services
         foreach (var edu in educations)
         {
           var endDate = edu.IsCurrentlyStudying ? "Atual" : edu.EndDate?.ToString("MMM yyyy");
+          var descriptionLine = string.IsNullOrWhiteSpace(edu.Description)
+            ? string.Empty
+            : $"\n  Descrição: {edu.Description}";
           profileBlock += $"""
             - {edu.Degree} em {edu.FieldOfStudy} na {edu.Institution} ({edu.Location})
-              Período: {edu.StartDate:MMM yyyy} até {endDate}
+              Período: {edu.StartDate:MMM yyyy} até {endDate}{descriptionLine}
 
             """;
         }
@@ -324,7 +322,7 @@ namespace SobMedidaApi.Services
         {
           profileBlock += $"""
             - {proj.Name} | {proj.Technologies}
-              Descrição: {Truncate(proj.Description)}
+              Descrição: {proj.Description}
 
             """;
         }
